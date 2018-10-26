@@ -28,8 +28,8 @@ var (
 )
 
 const (
-	chickenMaxSpeed     = 3.0
-	chickenAcceleration = 0.5
+	chickenMaxSpeed     = 5.0
+	chickenAcceleration = 0.75
 )
 
 type chicken struct {
@@ -186,7 +186,7 @@ func run() {
 
 	game.loadChickenSprites()
 
-	fps := time.Tick(time.Second / 15)
+	fps := time.Tick(time.Second / 25)
 	for !game.win.Closed() {
 		if game.intro {
 			runIntro(game)
