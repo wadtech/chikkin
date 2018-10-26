@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image"
+	"log"
 	"math"
 	"math/rand"
 	"os"
@@ -10,11 +11,13 @@ import (
 
 	"image/color"
 
+	_ "image/gif"
 	_ "image/png"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
+	"github.com/pkg/errors"
 	"golang.org/x/image/font/basicfont"
 )
 
@@ -41,6 +44,11 @@ type chicken struct {
 	speed       float64
 }
 
+type chickenSprites struct {
+	spritesheet pixel.Picture
+	frames      []pixel.Rect
+}
+
 type game struct {
 	win          *pixelgl.Window
 	txt          *text.Text
@@ -57,7 +65,7 @@ type game struct {
 	score         int
 	background    *color.RGBA
 	chickens      []*chicken
-	spritesheet   pixel.Picture
+	spritesheets  []chickenSprites
 	chickenFrames []pixel.Rect
 }
 
@@ -92,10 +100,17 @@ func (c *chicken) running() *pixel.Sprite {
 func (g *game) spawnChicken() {
 	// get random Y axis position
 
+	spriteSet := 0 // default
+	if r := rand.Float64(); r > 0.8 {
+		spriteSet = 1
+	}
+
+	spritesheet := g.spritesheets[spriteSet]
+
 	y := g.win.Bounds().Center().Y * rand.Float64()
 	chick := &chicken{
-		frames:      g.chickenFrames,
-		spritesheet: g.spritesheet,
+		frames:      spritesheet.frames,
+		spritesheet: spritesheet.spritesheet,
 		spriteIndex: 0,
 		y:           y,
 		x:           0,
@@ -228,18 +243,23 @@ func runMenu(game *game) {
 }
 
 func (g *game) loadChickenSprites() {
-	spritesheet, err := loadPicture("resources/chick_24x24.png")
-	if err != nil {
-		panic(err)
-	}
-
-	for x := spritesheet.Bounds().Min.X; x < spritesheet.Bounds().Max.X; x += 24 {
-		for y := spritesheet.Bounds().Min.Y; y < spritesheet.Bounds().Max.Y; y += 24 {
-			g.chickenFrames = append(g.chickenFrames, pixel.R(x, y, x+24, y+24))
+	for _, file := range []string{"resources/chick_24x24.png", "resources/chick_bl_24x24.gif"} {
+		spritesheet, err := loadPicture(file)
+		if err != nil {
+			log.Fatal(errors.Wrap(err, "Loading sprites"))
 		}
-	}
 
-	g.spritesheet = spritesheet
+		var frames []pixel.Rect
+		for x := spritesheet.Bounds().Min.X; x < spritesheet.Bounds().Max.X; x += 24 {
+			for y := spritesheet.Bounds().Min.Y; y < spritesheet.Bounds().Max.Y; y += 24 {
+				frames = append(frames, pixel.R(x, y, x+24, y+24))
+			}
+		}
+
+		sprite := chickenSprites{spritesheet: spritesheet, frames: frames}
+
+		g.spritesheets = append(g.spritesheets, sprite)
+	}
 }
 
 func runIntro(game *game) {

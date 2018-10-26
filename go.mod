@@ -8,6 +8,6 @@ require (
 	github.com/go-gl/glfw v0.0.0-20181014061658-691ee1b84c51 // indirect
 	github.com/go-gl/mathgl v0.0.0-20180804195959-cdf14b6b8f8a // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
-	github.com/pkg/errors v0.8.0 // indirect
+	github.com/pkg/errors v0.8.0
 	golang.org/x/image v0.0.0-20180926015637-991ec62608f3
 )
