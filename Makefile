@@ -7,9 +7,9 @@ SERVERBIN=chikkin
 
 all: test build buildwin
 build:
-	$(GOBUILD) -o ./bin/$(SERVERBIN) -v ./cmd/gamey/main.go
+	$(GOBUILD) -o ./bin/$(SERVERBIN) -v ./cmd/chikkin/main.go
 buildwin:
-	GOOS=windows GOARCH=386 CGO_ENABLED=1 CC=i686-w64-mingw32-gcc $(GOBUILD) -o ./bin/$(SERVERBIN).exe -v ./cmd/gamey/main.go
+	GOOS=windows GOARCH=386 CGO_ENABLED=1 CC=i686-w64-mingw32-gcc $(GOBUILD) -o ./bin/$(SERVERBIN).exe -v ./cmd/chikkin/main.go
 test:
 	$(GOTEST) -v ./...
 testnocache:
